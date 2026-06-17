@@ -235,7 +235,6 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- パスワードロック画面 -->
     <div id="lock-screen">
         <div class="tenkey-container">
             <div class="lock-message">パスワードを入力してください</div>
@@ -260,15 +259,13 @@
         </div>
     </div>
 
-    <!-- メインコンテンツ -->
     <div id="main-content">
         <h1>「百白・白石梅花藻祭り 2026」ステージ（25分）</h1>
 
-        <!-- M1 -->
         <div class="player-box">
             <div class="track-title"><span class="track-number">1</span>登場曲 新しいふるさと（1番のみ〜1分）</div>
             <audio controls controlsList="nodownload" preload="metadata">
-                <source src="./compressed/M1.aac" type="audio/aac">
+                <source src="M1.aac" type="audio/aac">
             </audio>
         </div>
 
@@ -299,19 +296,17 @@
             </div>
         </div>
 
-        <!-- M2 -->
         <div class="player-box">
             <div class="track-title"><span class="track-number">2</span>さくら（2分30秒）</div>
             <audio controls controlsList="nodownload" preload="metadata">
-                <source src="./compressed/M2.aac" type="audio/aac">
+                <source src="M2.aac" type="audio/aac">
             </audio>
         </div>
 
-        <!-- M3 -->
         <div class="player-box">
             <div class="track-title"><span class="track-number">3</span>世界を食べて生きている（3分）</div>
             <audio controls controlsList="nodownload" preload="metadata">
-                <source src="./compressed/M3.aac" type="audio/aac">
+                <source src="M3.aac" type="audio/aac">
             </audio>
         </div>
 
@@ -334,11 +329,10 @@
             </div>
         </div>
 
-        <!-- M4 -->
         <div class="player-box">
             <div class="track-title"><span class="track-number">4</span>スターダストメモリー（3分）</div>
             <audio controls controlsList="nodownload" preload="metadata">
-                <source src="./compressed/M4.aac" type="audio/aac">
+                <source src="M4.aac" type="audio/aac">
             </audio>
         </div>
 
@@ -350,11 +344,10 @@
             <div class="note">※＜給水タイムあり＞</div>
         </div>
 
-        <!-- M5 -->
         <div class="player-box">
             <div class="track-title"><span class="track-number">5</span>丸森シルクワールド（3分）</div>
             <audio controls controlsList="nodownload" preload="metadata">
-                <source src="./compressed/M5.aac" type="audio/aac">
+                <source src="M5.aac" type="audio/aac">
             </audio>
         </div>
 
@@ -397,11 +390,10 @@
             </div>
         </div>
 
-        <!-- M6 -->
         <div class="player-box">
             <div class="track-title"><span class="track-number">6</span>フレンズ</div>
             <audio controls controlsList="nodownload" preload="metadata">
-                <source src="./compressed/M6.aac" type="audio/aac">
+                <source src="M6.aac" type="audio/aac">
             </audio>
         </div>
 
@@ -417,11 +409,10 @@
             </div>
         </div>
 
-        <!-- アンコール -->
         <div class="player-box">
             <div class="track-title"><span class="track-number encore">7</span>「歌フェス！」（2分半）</div>
             <audio controls controlsList="nodownload" preload="metadata">
-                <source src="./compressed/annkoru.aac" type="audio/aac">
+                <source src="annkoru.aac" type="audio/aac">
             </audio>
         </div>
 
@@ -437,70 +428,6 @@
         </div>
     </div>
 
-    <!-- 制御用スクリプト -->
     <script>
         // --- テンキーとパスワードの処理 ---
-        let enteredPassword = "";
-        const targetPassword = "8374"; 
-        
-        const pwdDisplay = document.getElementById("pwd-display");
-        const errorMsg = document.getElementById("error-msg");
-        const lockScreen = document.getElementById("lock-screen");
-        const mainContent = document.getElementById("main-content");
-
-        function updateDisplay() {
-            pwdDisplay.textContent = "＊".repeat(enteredPassword.length);
-        }
-
-        function pressKey(num) {
-            if (enteredPassword.length < 4) {
-                enteredPassword += num;
-                updateDisplay();
-                errorMsg.textContent = ""; 
-                
-                if (enteredPassword.length === 4) {
-                    setTimeout(checkPassword, 150); 
-                }
-            }
-        }
-
-        function clearKey() {
-            enteredPassword = "";
-            updateDisplay();
-            errorMsg.textContent = "";
-        }
-
-        function deleteKey() {
-            enteredPassword = enteredPassword.slice(0, -1);
-            updateDisplay();
-            errorMsg.textContent = "";
-        }
-
-        function checkPassword() {
-            if (enteredPassword === targetPassword) {
-                lockScreen.style.display = "none";
-                mainContent.style.display = "block";
-            } else {
-                errorMsg.textContent = "パスワードが違います";
-                pwdDisplay.classList.add("shake");
-                
-                setTimeout(() => {
-                    pwdDisplay.classList.remove("shake");
-                    clearKey();
-                }, 400);
-            }
-        }
-
-        // --- 音楽の同時再生防止処理 ---
-        document.addEventListener('play', function(e){
-            var audios = document.getElementsByTagName('audio');
-            for(var i = 0, len = audios.length; i < len;i++){
-                if(audios[i] != e.target){
-                    audios[i].pause();
-                }
-            }
-        }, true);
-    </script>
-
-</body>
-</html>
+        let enteredPassword =
