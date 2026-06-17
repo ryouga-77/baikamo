@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>「百白・白石梅花藻祭り 2026」ステージ</title>
+    <style>
+        /* ベース設定 */
+        body {
+            font-family: 'Hiragino Maru Gothic ProN', 'Rounded Mplus 1c', 'Quicksand', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fcfbf9; 
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* -------------------------
+           ロック画面（テンキー）
+        ------------------------- */
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fcfbf9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .tenkey-container {
+            width: 100%;
+            max-width: 320px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .lock-message {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .password-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            letter-spacing: 15px;
+            height: 50px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+            color: #333;
+        }
+
+        .tenkey-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px 10px;
+            justify-items: center;
+        }
+
+        .tenkey-btn {
+            background-color: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: background-color 0.1s;
+            font-family: 'Quicksand', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        .tenkey-btn:active {
+            background-color: #f0f0f0;
+        }
+
+        .tenkey-cmd {
+            background-color: #f9f9f9;
+            font-size: 1.2rem;
+            color: #888;
+        }
+
+        .error-msg {
+            color: #ff5252;
+            text-align: center;
+            height: 20px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.4s ease-in-out;
+            border-bottom-color: #ff5252;
+            color: #ff5252;
+        }
+
+        /* -------------------------
+           メインコンテンツ（台本部分）
+        ------------------------- */
+        #main-content {
+            display: none; 
+            padding: 3vw 5vw;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #ccc;
+        }
+
+        .player-box {
+            margin: 40px 0 20px;
+            padding: 15px 0;
+            border-top: 1px solid #eaeaea;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .track-title {
+            font-weight: bold;
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            margin-bottom: 15px;
+            color: #111;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .track-number {
+            background-color: #333;
+            color: #fff;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-right: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .encore {
+            background-color: #ff5252;
+        }
+
+        audio {
+            width: 100%;
+            outline: none;
+        }
+
+        .script-section {
+            margin-bottom: 50px;
+            padding: 0 2vw;
+        }
+
+        .dialogue {
+            display: flex;
+            margin-bottom: 18px;
+            align-items: flex-start;
+        }
+
+        .speaker {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #333;
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-right: 20px;
+            min-width: 40px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sp-a { background-color: #ffcdd2; } 
+        .sp-b { background-color: #ffe0b2; } 
+        .sp-c { background-color: #fff9c4; } 
+        .sp-d { background-color: #c8e6c9; } 
+        .sp-e { background-color: #bbdefb; } 
+        .sp-f { background-color: #e1bee7; } 
+        .sp-all { 
+            background: linear-gradient(135deg, #ffcdd2, #fff9c4, #bbdefb); 
+            letter-spacing: 2px;
+        }
+
+        .speech {
+            font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+            padding-top: 3px;
+        }
+
+        .note {
+            color: #888;
+            font-size: 0.9em;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            #main-content {
+                padding: 20px 10px;
+            }
+            .speaker {
+                margin-right: 12px;
+                padding: 4px 10px;
+                min-width: 35px;
+                font-size: 0.85rem;
+            }
+            .script-section {
+                padding: 0 5px;
+            }
+            .tenkey-btn {
+                width: 65px;
+                height: 65px;
+            }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <!-- パスワードロック画面 -->
+    <div id="lock-screen">
+        <div class="tenkey-container">
+            <div class="lock-message">パスワードを入力してください</div>
+            <div class="password-display" id="pwd-display"></div>
+            
+            <div class="tenkey-grid">
+                <button class="tenkey-btn" onclick="pressKey('1')">1</button>
+                <button class="tenkey-btn" onclick="pressKey('2')">2</button>
+                <button class="tenkey-btn" onclick="pressKey('3')">3</button>
+                <button class="tenkey-btn" onclick="pressKey('4')">4</button>
+                <button class="tenkey-btn" onclick="pressKey('5')">5</button>
+                <button class="tenkey-btn" onclick="pressKey('6')">6</button>
+                <button class="tenkey-btn" onclick="pressKey('7')">7</button>
+                <button class="tenkey-btn" onclick="pressKey('8')">8</button>
+                <button class="tenkey-btn" onclick="pressKey('9')">9</button>
+                <button class="tenkey-btn tenkey-cmd" onclick="clearKey()">C</button>
+                <button class="tenkey-btn" onclick="pressKey('0')">0</button>
+                <button class="tenkey-btn tenkey-cmd" onclick="deleteKey()">←</button>
+            </div>
+            
+            <div class="error-msg" id="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div id="main-content">
+        <h1>「百白・白石梅花藻祭り 2026」ステージ（25分）</h1>
+
+        <!-- M1 -->
+        <div class="player-box">
+            <div class="track-title"><span class="track-number">1</span>登場曲 新しいふるさと（1番のみ〜1分）</div>
+            <audio controls controlsList="nodownload" preload="metadata">
+                <source src="./compressed/M1.aac" type="audio/aac">
+            </audio>
+        </div>
+
+        <div class="script-section">
+            <div class="dialogue">
+                <div class="speaker sp-a">A</div>
+                <div class="speech">みなさ〜ん、こんにちは！<br>私たちは、仙南地域の児童劇団、AZ9ジュニア・アクターズです！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">AZ9ジュニア・アクターズです！・・・いぇ〜！！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-b">B</div>
+                <div class="speech">今日は、私たちの歌とダンスで「白石梅花藻（ばいかも）まつり」を盛り上げにやってきました。よろしくお願いします。</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">よろしくお願いしま〜す！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-c">C</div>
+                <div class="speech">まずは、白石川のサクラにちなんだ、歌を2曲続けてお贈りします。せ〜っの！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">ミュージック、スタート！！</div>
+            </div>
+        </div>
+
+        <!-- M2 -->
+        <div class="player-box">
+            <div class="track-title"><span class="track-number">2</span>さくら（2分30秒）</div>
+            <audio controls controlsList="nodownload" preload="metadata">
+                <source src="./compressed/M2.aac" type="audio/aac">
+            </audio>
+        </div>
+
+        <!-- M3 -->
+        <div class="player-box">
+            <div class="track-title"><span class="track-number">3</span>世界を食べて生きている（3分）</div>
+            <audio controls controlsList="nodownload" preload="metadata">
+                <source src="./compressed/M3.aac" type="audio/aac">
+            </audio>
+        </div>
+
+        <div class="script-section">
+            <div class="dialogue">
+                <div class="speaker sp-d">D</div>
+                <div class="speech">さて、私たちは毎年、仙南地域の町の歴史や文化をテーマにしたお芝居を上演しています。</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-e">E</div>
+                <div class="speech">今年の2月には、『丸森シルクワールド』という、お芝居を、大河原のえずこホールで上演しました。</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-f">F</div>
+                <div class="speech">その中から、2曲続けてお贈りします！せ〜の！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">ミュージックスタート</div>
+            </div>
+        </div>
+
+        <!-- M4 -->
+        <div class="player-box">
+            <div class="track-title"><span class="track-number">4</span>スターダストメモリー（3分）</div>
+            <audio controls controlsList="nodownload" preload="metadata">
+                <source src="./compressed/M4.aac" type="audio/aac">
+            </audio>
+        </div>
+
+        <div class="script-section">
+            <div class="dialogue">
+                <div class="speaker sp-f">F</div>
+                <div class="speech">給水タイムを頂きます！</div>
+            </div>
+            <div class="note">※＜給水タイムあり＞</div>
+        </div>
+
+        <!-- M5 -->
+        <div class="player-box">
+            <div class="track-title"><span class="track-number">5</span>丸森シルクワールド（3分）</div>
+            <audio controls controlsList="nodownload" preload="metadata">
+                <source src="./compressed/M5.aac" type="audio/aac">
+            </audio>
+        </div>
+
+        <div class="script-section">
+            <div class="dialogue">
+                <div class="speaker sp-a">A</div>
+                <div class="speech">AZ9ジュニア・アクターズは、ただ今、第34期生を募集中です。</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-b">B</div>
+                <div class="speech">AZ9に入ると、新しい友達ができるよ！<br>そして、ダンスや歌が〜うまくなります！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-c">C</div>
+                <div class="speech">いろんなイベントで参加したり、秋には楽しい合宿もあります。</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-d">D</div>
+                <div class="speech">合宿では、花火大会や星空観察、スイカ割りや水遊びなんかもやります。</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-e">E</div>
+                <div class="speech">私たちと一緒に、大きなステージに立ってみませんか？</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-f">F</div>
+                <div class="speech">興味のある小学生は、一度体験レッスンに、参加してみてください！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">参加してみてください！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-a">A</div>
+                <div class="speech">さてさて、あっという間に、ラスト曲です。最後は私たちのテーマソングです。せ〜の！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">「フレンズ！」</div>
+            </div>
+        </div>
+
+        <!-- M6 -->
+        <div class="player-box">
+            <div class="track-title"><span class="track-number">6</span>フレンズ</div>
+            <audio controls controlsList="nodownload" preload="metadata">
+                <source src="./compressed/M6.aac" type="audio/aac">
+            </audio>
+        </div>
+
+        <div class="script-section">
+            <div class="note">※アンコールあり</div>
+            <div class="dialogue">
+                <div class="speaker sp-b">B</div>
+                <div class="speech">今日は、「白石梅花藻祭り」に参加できて、とても楽しかったです。<br>みなさん、AZ9ジュニア・アクターズを、これからも応援してください！<br>私たちは、みなさんに『元気と笑顔』をとどけられるようにこれからも頑張ります。<br>それでは、アンコールにお応えして、もう一曲！踊ります！<br>せ〜っの！</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">「歌フェス！」</div>
+            </div>
+        </div>
+
+        <!-- アンコール -->
+        <div class="player-box">
+            <div class="track-title"><span class="track-number encore">7</span>「歌フェス！」（2分半）</div>
+            <audio controls controlsList="nodownload" preload="metadata">
+                <source src="./compressed/annkoru.aac" type="audio/aac">
+            </audio>
+        </div>
+
+        <div class="script-section">
+            <div class="dialogue">
+                <div class="speaker sp-c">C</div>
+                <div class="speech">AZ9ジュニア・アクターズでした！みなさん、ありがとうございました。</div>
+            </div>
+            <div class="dialogue">
+                <div class="speaker sp-all">全員</div>
+                <div class="speech">ありがとうございました。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 制御用スクリプト -->
+    <script>
+        // --- テンキーとパスワードの処理 ---
+        let enteredPassword = "";
+        const targetPassword = "8374"; 
+        
+        const pwdDisplay = document.getElementById("pwd-display");
+        const errorMsg = document.getElementById("error-msg");
+        const lockScreen = document.getElementById("lock-screen");
+        const mainContent = document.getElementById("main-content");
+
+        function updateDisplay() {
+            pwdDisplay.textContent = "＊".repeat(enteredPassword.length);
+        }
+
+        function pressKey(num) {
+            if (enteredPassword.length < 4) {
+                enteredPassword += num;
+                updateDisplay();
+                errorMsg.textContent = ""; 
+                
+                if (enteredPassword.length === 4) {
+                    setTimeout(checkPassword, 150); 
+                }
+            }
+        }
+
+        function clearKey() {
+            enteredPassword = "";
+            updateDisplay();
+            errorMsg.textContent = "";
+        }
+
+        function deleteKey() {
+            enteredPassword = enteredPassword.slice(0, -1);
+            updateDisplay();
+            errorMsg.textContent = "";
+        }
+
+        function checkPassword() {
+            if (enteredPassword === targetPassword) {
+                lockScreen.style.display = "none";
+                mainContent.style.display = "block";
+            } else {
+                errorMsg.textContent = "パスワードが違います";
+                pwdDisplay.classList.add("shake");
+                
+                setTimeout(() => {
+                    pwdDisplay.classList.remove("shake");
+                    clearKey();
+                }, 400);
+            }
+        }
+
+        // --- 音楽の同時再生防止処理 ---
+        document.addEventListener('play', function(e){
+            var audios = document.getElementsByTagName('audio');
+            for(var i = 0, len = audios.length; i < len;i++){
+                if(audios[i] != e.target){
+                    audios[i].pause();
+                }
+            }
+        }, true);
+    </script>
+
+</body>
+</html>
