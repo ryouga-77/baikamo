@@ -430,4 +430,67 @@
 
     <script>
         // --- テンキーとパスワードの処理 ---
-        let enteredPassword =
+        let enteredPassword = "";
+        const targetPassword = "8374"; 
+        
+        const pwdDisplay = document.getElementById("pwd-display");
+        const errorMsg = document.getElementById("error-msg");
+        const lockScreen = document.getElementById("lock-screen");
+        const mainContent = document.getElementById("main-content");
+
+        function updateDisplay() {
+            pwdDisplay.textContent = "＊".repeat(enteredPassword.length);
+        }
+
+        function pressKey(num) {
+            if (enteredPassword.length < 4) {
+                enteredPassword += num;
+                updateDisplay();
+                errorMsg.textContent = ""; 
+                
+                if (enteredPassword.length === 4) {
+                    setTimeout(checkPassword, 150); 
+                }
+            }
+        }
+
+        function clearKey() {
+            enteredPassword = "";
+            updateDisplay();
+            errorMsg.textContent = "";
+        }
+
+        function deleteKey() {
+            enteredPassword = enteredPassword.slice(0, -1);
+            updateDisplay();
+            errorMsg.textContent = "";
+        }
+
+        function checkPassword() {
+            if (enteredPassword === targetPassword) {
+                lockScreen.style.display = "none";
+                mainContent.style.display = "block";
+            } else {
+                errorMsg.textContent = "パスワードが違います";
+                pwdDisplay.classList.add("shake");
+                
+                setTimeout(() => {
+                    pwdDisplay.classList.remove("shake");
+                    clearKey();
+                }, 400);
+            }
+        }
+
+        // --- 音楽の同時再生防止処理 ---
+        document.addEventListener('play', function(e){
+            var audios = document.getElementsByTagName('audio');
+            for(var i = 0, len = audios.length; i < len;i++){
+                if(audios[i] != e.target){
+                    audios[i].pause();
+                }
+            }
+        }, true);
+    </script>
+
+</body>
+</html>
